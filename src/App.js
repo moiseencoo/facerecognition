@@ -2,23 +2,13 @@ import React, {Component} from 'react';
 import Particles from 'react-particles-js';
 import Navigation from './components/Navigation/Navigation';
 import Logo from './components/Logo/Logo';
+import Signin from './components/Signin/Signin';
 import ImageLinkForm from './components/ImageLinkForm/ImageLinkForm';
 import Rank from './components/Rank/Rank';
 import FaceRecognition from './components/FaceRecognition/FaceRecognition';
 import Clarifai from 'clarifai';
 import './App.css';
 
-const particlesOption = {
-  particles: {
-    namber: {
-      value: 30,
-      density: {
-        enable: true,
-        value_area: 800,
-      }
-    }
-  }
-}
 
 const app = new Clarifai.App({apiKey: 'f58996d1a23b425c9eb4a3b2f0711c38'});
 
@@ -30,6 +20,7 @@ class App extends Component {
       input: '',
       imageUrl: '',
       box: {},
+      route: 'signin',
     }
   }
 
@@ -48,7 +39,6 @@ class App extends Component {
   }
 
   displayFaceBox = (box) => {
-    console.log(box);
     this.setState( {
       box: box
     })
@@ -72,23 +62,41 @@ class App extends Component {
     .catch(err => console.log(err) );
   }
 
+  onRouteChange = () => {
+    this.setState({
+      route: 'home'
+    })
+  }
+
   render() {
     return (
       <div className="App">
         <Particles className="particles"
           params={{
-              particles: {particlesOption}
-              }
+            "particles": {
+                "number": {
+                    "value": 150
+                },
+                "size": {
+                    "value": 2
+                }
+              },
+           }
           } />
         <Navigation />
         <Logo />
-        <Rank />
-        <ImageLinkForm 
-            onInputChange={this.oninputChange}
-            onButtonSubmit={this.onButtonSubmit} />
-        <FaceRecognition 
-            imageUrl={this.state.imageUrl}
-            box={this.state.box} /> 
+        { this.state.route === 'signin' ?
+        <Signin onRouteChange={this.onRouteChange} /> :
+        <React.Fragment>
+          <Rank />
+          <ImageLinkForm 
+              onInputChange={this.oninputChange}
+              onButtonSubmit={this.onButtonSubmit} />
+          <FaceRecognition 
+              imageUrl={this.state.imageUrl}
+              box={this.state.box} /> 
+        </React.Fragment>
+        }
       </div>
     );
   }
